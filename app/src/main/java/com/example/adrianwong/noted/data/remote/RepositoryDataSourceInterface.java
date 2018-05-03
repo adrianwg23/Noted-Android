@@ -6,6 +6,6 @@ import retrofit2.Call;
 
 public interface RepositoryDataSourceInterface {
 
-    Call<UserDataModel> loginUser (String username, String password);
-    Call<UserDataModel> registerUser (String username, String password);
+    Call<UserDataModel> loginUser (UserDataModel user);
+    Call<UserDataModel> registerUser (UserDataModel user);
 }

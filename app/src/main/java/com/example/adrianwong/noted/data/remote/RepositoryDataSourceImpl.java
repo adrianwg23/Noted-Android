@@ -12,15 +12,14 @@ public class RepositoryDataSourceImpl implements RepositoryDataSourceInterface {
         this.restAdapter = restAdapter;
     }
 
-
     @Override
-    public Call<UserDataModel> loginUser(String username, String password) {
-        return restAdapter.loginUser(new UserDataModel(username, password));
+    public Call<UserDataModel> loginUser(UserDataModel user) {
+        return restAdapter.loginUser(user);
     }
 
     @Override
-    public Call<UserDataModel> registerUser(String username, String password) {
-        return restAdapter.registerUser(new UserDataModel(username, password));
+    public Call<UserDataModel> registerUser(UserDataModel user) {
+        return restAdapter.registerUser(user);
     }
 
 }

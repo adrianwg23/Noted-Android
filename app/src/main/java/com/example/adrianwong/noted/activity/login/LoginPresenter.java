@@ -2,12 +2,15 @@ package com.example.adrianwong.noted.activity.login;
 
 import android.arch.lifecycle.LifecycleObserver;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.adrianwong.noted.data.remote.NotedRestAdapter;
 import com.example.adrianwong.noted.data.remote.RepositoryDataSourceInterface;
 import com.example.adrianwong.noted.datamodel.remote.UserDataModel;
 import com.example.adrianwong.noted.util.BaseSchedulerProvider;
+import com.example.adrianwong.noted.util.NetworkHelper;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+
+import java.io.IOException;
 
 import io.reactivex.disposables.CompositeDisposable;
 import retrofit2.Call;
@@ -28,17 +31,37 @@ public class LoginPresenter implements LifecycleObserver {
         this.disposable = disposable;
     }
 
-    public void login(String username, String password) {
-        Call<UserDataModel> call = dataSource.loginUser(username, password);
+    public void loginOrRegister(String username, String password, final int requestId) {
+        UserDataModel user = new UserDataModel(username, password);
+        Call<UserDataModel> call;
+
+        if (requestId == NetworkHelper.LOGIN) {
+            call = dataSource.loginUser(user);
+        } else {
+            call = dataSource.registerUser(user);
+        }
 
         call.enqueue(new Callback<UserDataModel>() {
             @Override
             public void onResponse(Call<UserDataModel> call, Response<UserDataModel> response) {
-                if (response.isSuccessful()){
-                    view.toastMessage(response.body().getAccessToken());
-                    Log.d("LoginPresenter", response.body().getMessage());
+                if (response.isSuccessful()) {
+                    if (requestId == NetworkHelper.REGISTER) view.toastMessage(response.body().getMessage());
+                    if (requestId == NetworkHelper.LOGIN) {
+                        Log.d("LoginPresenter", "access token: " + response.body().getAccessToken());
+                        Log.d("LoginPresenter", "refresh token: " + response.body().getRefreshToken());
+                    }
                 } else {
-                    Log.d("LoginPresenter", response.body().getMessage());
+                    if (response.errorBody() != null) {
+                        Moshi moshi = new Moshi.Builder().build();
+                        JsonAdapter<UserDataModel> jsonAdapter = moshi.adapter(UserDataModel.class);
+
+                        try {
+                            String message = jsonAdapter.fromJson(response.errorBody().string()).getMessage();
+                            view.toastMessage(message);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
 
@@ -47,22 +70,6 @@ public class LoginPresenter implements LifecycleObserver {
                 view.toastMessage("Something went wrong :(");
             }
         });
-    }
 
-    public void register(String username, String password) {
-        Call<UserDataModel> call = dataSource.registerUser(username, password);
-
-        call.enqueue(new Callback<UserDataModel>() {
-            @Override
-            public void onResponse(Call<UserDataModel> call, Response<UserDataModel> response) {
-                Log.d("LoginPresenter", response.body().getMessage());
-            }
-
-            @Override
-            public void onFailure(Call<UserDataModel> call, Throwable t) {
-                view.toastMessage("Something went wrong");
-                Log.wtf("LoginRegister", t.toString());
-            }
-        });
     }
 }

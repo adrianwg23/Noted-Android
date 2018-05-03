@@ -10,7 +10,7 @@ public class UserDataModel {
     @Json(name = "password")
     private String password;
 
-    @Json(name = "message")
+    @Json(name = "msg")
     private String message;
 
     @Json(name = "access_token")

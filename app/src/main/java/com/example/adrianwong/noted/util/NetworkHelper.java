@@ -13,7 +13,10 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class NetworkHelper {
 
-    private static HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+    public static final int LOGIN = 0;
+    public static final int REGISTER = 1;
+
+    private static final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
 
     private static final OkHttpClient client = new OkHttpClient.Builder()
             .addInterceptor(getInterceptor())

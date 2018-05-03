@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.activity.list.ListActivity;
+import com.example.adrianwong.noted.util.NetworkHelper;
 import com.example.adrianwong.noted.util.PresenterHelper;
 
 import butterknife.BindView;
@@ -46,15 +47,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.button_login) {
+        int viewId = v.getId();
+        if (viewId == R.id.button_login || viewId == R.id.tv_sign_up) {
             String username = mUsernameEditText.getText().toString();
             String password = mPasswordEditText.getText().toString();
-            presenter.login(username, password);
-        } else if (v.getId() == R.id.tv_sign_up) {
-            Toast.makeText(this, "Register clicked", Toast.LENGTH_SHORT).show();
-            String username = mUsernameEditText.getText().toString();
-            String password = mPasswordEditText.getText().toString();
-            presenter.register(username, password);
+
+            if (viewId == R.id.button_login) {
+                presenter.loginOrRegister(username, password, NetworkHelper.LOGIN);
+            } else {
+                presenter.loginOrRegister(username, password, NetworkHelper.REGISTER);
+            }
         }
     }
 
@@ -66,6 +68,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void toastMessage(String token) {
-        Toast.makeText(this, token, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, token, Toast.LENGTH_SHORT).show();
     }
 }
