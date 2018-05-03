@@ -1,8 +1,8 @@
 package com.example.adrianwong.noted.activity.login;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.activity.list.ListActivity;
-import com.example.adrianwong.noted.util.NetworkHelper;
 import com.example.adrianwong.noted.util.PresenterHelper;
 
 import butterknife.BindView;
@@ -53,9 +52,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             String password = mPasswordEditText.getText().toString();
 
             if (viewId == R.id.button_login) {
-                presenter.loginOrRegister(username, password, NetworkHelper.LOGIN);
+                presenter.login(username, password);
             } else {
-                presenter.loginOrRegister(username, password, NetworkHelper.REGISTER);
+                presenter.register(username, password);
             }
         }
     }

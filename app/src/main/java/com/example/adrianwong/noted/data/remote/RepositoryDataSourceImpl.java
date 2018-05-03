@@ -2,7 +2,8 @@ package com.example.adrianwong.noted.data.remote;
 
 import com.example.adrianwong.noted.datamodel.remote.UserDataModel;
 
-import retrofit2.Call;
+import io.reactivex.Observable;
+import retrofit2.Response;
 
 public class RepositoryDataSourceImpl implements RepositoryDataSourceInterface {
 
@@ -13,12 +14,12 @@ public class RepositoryDataSourceImpl implements RepositoryDataSourceInterface {
     }
 
     @Override
-    public Call<UserDataModel> loginUser(UserDataModel user) {
+    public Observable<Response<UserDataModel>> loginUser(UserDataModel user) {
         return restAdapter.loginUser(user);
     }
 
     @Override
-    public Call<UserDataModel> registerUser(UserDataModel user) {
+    public Observable<Response<UserDataModel>> registerUser(UserDataModel user) {
         return restAdapter.registerUser(user);
     }
 
