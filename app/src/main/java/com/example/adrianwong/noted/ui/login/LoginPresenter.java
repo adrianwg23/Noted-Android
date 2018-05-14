@@ -1,4 +1,4 @@
-package com.example.adrianwong.noted.activity.login;
+package com.example.adrianwong.noted.ui.login;
 
 import android.arch.lifecycle.LifecycleObserver;
 import android.text.TextUtils;

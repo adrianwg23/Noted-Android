@@ -1,15 +1,15 @@
-package com.example.adrianwong.noted.activity.list;
+package com.example.adrianwong.noted.ui.edit;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.adrianwong.noted.R;
 
-public class ListActivity extends AppCompatActivity {
+public class EmptyActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_empty);
     }
 }

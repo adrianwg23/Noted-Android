@@ -1,4 +1,4 @@
-package com.example.adrianwong.noted.activity.login;
+package com.example.adrianwong.noted.ui.login;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.adrianwong.noted.R;
-import com.example.adrianwong.noted.activity.list.ListActivity;
+import com.example.adrianwong.noted.ui.list.ListActivity;
 import com.example.adrianwong.noted.util.PresenterHelper;
 
 import butterknife.BindView;
@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void toastMessage(String token) {
-        Toast.makeText(this, token, Toast.LENGTH_SHORT).show();
+    public void makeToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
