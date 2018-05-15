@@ -23,7 +23,7 @@ public class LoginActivity extends BaseActivity {
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        if (pref.getBoolean("logged_in", false)) {
+        if (pref.getBoolean("is_logged_in", false)) {
             Intent intent = new Intent(this, ListActivity.class);
             startActivity(intent);
             finish();
