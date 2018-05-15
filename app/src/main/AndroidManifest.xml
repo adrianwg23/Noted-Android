@@ -21,9 +21,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.list.ListActivity" />
-        <activity android:name=".ui.edit.EmptyActivity" />
         <activity android:name=".ui.detail.DetailActivity" />
         <activity android:name=".ui.add.AddActivity" />
+        <activity android:name=".ui.edit.EditActivity"></activity>
     </application>
 
 </manifest>

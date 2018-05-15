@@ -1,4 +1,4 @@
 package com.example.adrianwong.noted.ui.detail;
 
-public interface DetailView {
+public interface DetailContract {
 }

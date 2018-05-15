@@ -1,10 +1,11 @@
 package com.example.adrianwong.noted.ui.login;
 
-import android.arch.lifecycle.LifecycleObserver;
-import android.text.TextUtils;
+import android.content.SharedPreferences.Editor;
 
 import com.example.adrianwong.noted.data.remote.RepositoryDataSourceInterface;
 import com.example.adrianwong.noted.datamodel.remote.UserDataModel;
+import com.example.adrianwong.noted.ui.base.BasePresenter;
+import com.example.adrianwong.noted.util.PresenterHelper;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
@@ -17,37 +18,35 @@ import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
-public class LoginPresenter implements LifecycleObserver {
+public class LoginPresenter extends BasePresenter<LoginContract.LoginView> implements LoginContract.ViewActions {
 
-    private LoginView view;
     private RepositoryDataSourceInterface dataSource;
     private CompositeDisposable disposable;
+    private Editor editor;
 
-    public LoginPresenter(LoginView view, RepositoryDataSourceInterface dataSource,
-                          CompositeDisposable disposable) {
-        this.view = view;
+    public LoginPresenter(RepositoryDataSourceInterface dataSource, Editor editor) {
         this.dataSource = dataSource;
-        this.disposable = disposable;
+        this.disposable = PresenterHelper.getDisposable();
+        this.editor = editor;
     }
 
-    public void login(String username, String password) {
-        if (areFieldsEmpty(username, password)) {
-            view.makeToast("Please enter a valid username and/or password");
-            return;
-        }
+    @Override
+    public void onLoginClicked(String username, String password) {
         loginOrRegister(dataSource.loginUser(new UserDataModel(username, password)));
     }
 
-    public void register(String username, String password) {
-        if (areFieldsEmpty(username, password)) {
-            view.makeToast("Please enter a valid username and/or password");
-            return;
-        }
-
+    @Override
+    public void onRegisterClicked(String username, String password) {
         loginOrRegister(dataSource.registerUser(new UserDataModel(username, password)));
     }
 
+    @Override
+    public void onStop() {
+        disposable.clear();
+    }
+
     private void loginOrRegister(Observable<Response<UserDataModel>> observable) {
+        mView.showLoading();
         disposable.add(observable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -55,10 +54,13 @@ public class LoginPresenter implements LifecycleObserver {
                     @Override
                     public void onNext(Response<UserDataModel> response) {
                         if (response.isSuccessful()) {
-                            String message = response.body().getMessage();
-                            if (!TextUtils.isEmpty(message)){
-                                view.makeToast(response.body().getMessage());
-                            }
+                            String accessToken = response.body().getAccessToken();
+                            String refreshToken = response.body().getRefreshToken();
+
+                            editor.putString("access_token", accessToken);
+                            editor.putString("refresh_token", refreshToken);
+
+                            mView.startListActivity();
                         }
                         if (response.errorBody() != null) {
                             Moshi moshi = new Moshi.Builder().build();
@@ -66,7 +68,7 @@ public class LoginPresenter implements LifecycleObserver {
 
                             try {
                                 String message = jsonAdapter.fromJson(response.errorBody().string()).getMessage();
-                                view.makeToast(message);
+                                mView.showToast(message);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -86,9 +88,5 @@ public class LoginPresenter implements LifecycleObserver {
                 })
 
         );
-    }
-
-    private boolean areFieldsEmpty(String username, String password) {
-        return TextUtils.isEmpty(username) || TextUtils.isEmpty(password);
     }
 }

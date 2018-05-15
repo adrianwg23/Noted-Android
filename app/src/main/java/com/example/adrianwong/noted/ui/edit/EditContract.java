@@ -1,4 +1,4 @@
 package com.example.adrianwong.noted.ui.edit;
 
-public interface EditView {
+public interface EditContract {
 }
