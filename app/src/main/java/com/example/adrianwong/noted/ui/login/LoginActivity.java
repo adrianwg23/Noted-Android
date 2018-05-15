@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 
 import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.ui.base.BaseActivity;
@@ -22,10 +23,10 @@ public class LoginActivity extends BaseActivity {
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        if (pref.getString("refresh_token", null) != null) {
+        if (pref.getBoolean("logged_in", false)) {
             Intent intent = new Intent(this, ListActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
+            finish();
         }
         setContentView(R.layout.activity_login);
 

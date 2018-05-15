@@ -59,6 +59,8 @@ public class LoginPresenter extends BasePresenter<LoginContract.LoginView> imple
 
                             editor.putString("access_token", accessToken);
                             editor.putString("refresh_token", refreshToken);
+                            editor.putBoolean("logged_in", true);
+                            editor.commit();
 
                             mView.startListActivity();
                         }

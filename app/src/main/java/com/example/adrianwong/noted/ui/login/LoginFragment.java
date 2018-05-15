@@ -87,7 +87,9 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView, 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mLoginPresenter.detachView();
+        if (mLoginPresenter != null) {
+            mLoginPresenter.detachView();
+        }
     }
 
     @Override
@@ -105,7 +107,7 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView, 
     public void startListActivity() {
         mLoginProgressBar.setVisibility(View.GONE);
         Intent intent = new Intent(getActivity(), ListActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        getActivity().finish();
         startActivity(intent);
     }
 
