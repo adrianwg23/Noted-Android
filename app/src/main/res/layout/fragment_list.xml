@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rec_list_activity"
+        android:id="@+id/rec_note_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

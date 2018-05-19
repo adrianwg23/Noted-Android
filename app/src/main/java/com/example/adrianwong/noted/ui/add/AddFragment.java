@@ -27,4 +27,5 @@ public class AddFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_add, container, false);
     }
 
+    public static AddFragment newInstance() { return new AddFragment(); }
 }

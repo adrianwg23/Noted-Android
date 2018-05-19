@@ -9,5 +9,6 @@ public interface ListContract {
     interface ListView {
         void startAddActivity();
         void startDetailActivity();
+        void initViews();
     }
 }
