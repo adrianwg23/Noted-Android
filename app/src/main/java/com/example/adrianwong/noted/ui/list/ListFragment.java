@@ -19,6 +19,7 @@ public class ListFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public static ListFragment newInstance() { return new ListFragment(); }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

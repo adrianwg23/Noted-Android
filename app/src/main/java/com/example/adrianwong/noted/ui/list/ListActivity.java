@@ -1,21 +1,27 @@
 package com.example.adrianwong.noted.ui.list;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentManager;
 
 import com.example.adrianwong.noted.R;
+import com.example.adrianwong.noted.ui.base.BaseActivity;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends BaseActivity {
+
+    private static final String LIST_FRAG = "LIST_FRAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Log.d("ListActivity", "test " +preferences.getString("refresh_token", null));
+        FragmentManager manager = getSupportFragmentManager();
+        ListFragment fragment = (ListFragment) manager.findFragmentByTag(LIST_FRAG);
+
+        if (fragment == null) {
+            fragment = ListFragment.newInstance();
+        }
+
+        addFragmentToActivity(manager, fragment, R.id.root_activity_list, LIST_FRAG);
     }
 }

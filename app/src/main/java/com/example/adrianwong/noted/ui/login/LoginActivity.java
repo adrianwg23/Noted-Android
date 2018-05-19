@@ -13,8 +13,6 @@ import com.example.adrianwong.noted.ui.list.ListActivity;
 
 public class LoginActivity extends BaseActivity {
 
-
-
     private static final String LOGIN_FRAG = "LOGIN_FRAG";
 
     @Override
