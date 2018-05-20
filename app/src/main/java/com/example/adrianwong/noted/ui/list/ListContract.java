@@ -11,5 +11,6 @@ public interface ListContract {
         void startAddActivity();
         void startDetailActivity();
         void initViews();
+        void setupViewModel();
     }
 }

@@ -9,5 +9,6 @@ public interface AddContract {
 
     interface AddView {
         void initViews();
+        void setupViewModel();
     }
 }

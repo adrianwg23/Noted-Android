@@ -5,11 +5,11 @@ import com.example.adrianwong.noted.datamodel.remote.UserDataModel;
 import io.reactivex.Observable;
 import retrofit2.Response;
 
-public class RepositoryDataSourceImpl implements RepositoryDataSourceInterface {
+public class UserRepositoryImpl implements UserRepository {
 
     private NotedRestAdapter restAdapter;
 
-    public RepositoryDataSourceImpl(NotedRestAdapter restAdapter) {
+    public UserRepositoryImpl(NotedRestAdapter restAdapter) {
         this.restAdapter = restAdapter;
     }
 

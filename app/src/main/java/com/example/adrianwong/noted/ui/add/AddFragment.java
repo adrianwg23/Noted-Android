@@ -1,6 +1,7 @@
 package com.example.adrianwong.noted.ui.add;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,8 +18,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.example.adrianwong.noted.R;
+import com.example.adrianwong.noted.data.local.NoteItem;
+import com.example.adrianwong.noted.util.InjectorUtil;
 import com.example.adrianwong.noted.util.PresenterHelper;
 import com.example.adrianwong.noted.util.Priority;
+import com.example.adrianwong.noted.viewmodel.AddViewModel;
+import com.example.adrianwong.noted.viewmodel.AddViewModelFactory;
 
 import java.util.Date;
 
@@ -36,6 +41,7 @@ public class AddFragment extends Fragment implements AddContract.AddView {
 
     AddPresenter mAddPresenter;
     private int mPriority = Priority.GREEN; // Green
+    private AddViewModel mViewModel;
 
     public AddFragment() {
         // Required empty public constructor
@@ -51,6 +57,7 @@ public class AddFragment extends Fragment implements AddContract.AddView {
         setHasOptionsMenu(true);
 
         initViews();
+        setupViewModel();
 
         return rootView;
     }
@@ -77,6 +84,9 @@ public class AddFragment extends Fragment implements AddContract.AddView {
                 String noteTitle = mNoteTitleEt.getText().toString();
                 String noteBody = mNoteBodyEt.getText().toString();
                 Date date = new Date();
+                NoteItem note = new NoteItem(noteTitle, noteBody, date, mPriority);
+                mViewModel.saveNote(note);
+                getActivity().finish();
 
         }
         return super.onOptionsItemSelected(item);
@@ -121,5 +131,11 @@ public class AddFragment extends Fragment implements AddContract.AddView {
                 mPriority = Priority.GREEN;
             }
         });
+    }
+
+    @Override
+    public void setupViewModel() {
+        AddViewModelFactory factory = InjectorUtil.provideAddViewModelFactory(getContext().getApplicationContext(), -1);
+        mViewModel = ViewModelProviders.of(this, factory).get(AddViewModel.class);
     }
 }

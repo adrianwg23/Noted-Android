@@ -1,18 +1,18 @@
 package com.example.adrianwong.noted.util;
 
-import com.example.adrianwong.noted.data.remote.RepositoryDataSourceImpl;
+import com.example.adrianwong.noted.data.remote.UserRepositoryImpl;
 
 import io.reactivex.disposables.CompositeDisposable;
 
 public class PresenterHelper {
 
-    private static final RepositoryDataSourceImpl dataSource = new RepositoryDataSourceImpl(NetworkHelper.getRestAdapter());
+    private static final UserRepositoryImpl dataSource = new UserRepositoryImpl(NetworkHelper.getRestAdapter());
     private static final CompositeDisposable disposable = new CompositeDisposable();
 
     private PresenterHelper() {
     }
 
-    public static RepositoryDataSourceImpl getDataSource() {
+    public static UserRepositoryImpl getDataSource() {
         return dataSource;
     }
 

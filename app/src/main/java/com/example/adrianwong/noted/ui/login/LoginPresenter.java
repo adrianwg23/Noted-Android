@@ -2,7 +2,7 @@ package com.example.adrianwong.noted.ui.login;
 
 import android.content.SharedPreferences.Editor;
 
-import com.example.adrianwong.noted.data.remote.RepositoryDataSourceInterface;
+import com.example.adrianwong.noted.data.remote.UserRepository;
 import com.example.adrianwong.noted.datamodel.remote.UserDataModel;
 import com.example.adrianwong.noted.ui.base.BasePresenter;
 import com.example.adrianwong.noted.util.PresenterHelper;
@@ -20,11 +20,11 @@ import retrofit2.Response;
 
 public class LoginPresenter extends BasePresenter<LoginContract.LoginView> implements LoginContract.ViewActions {
 
-    private RepositoryDataSourceInterface dataSource;
+    private UserRepository dataSource;
     private CompositeDisposable disposable;
     private Editor editor;
 
-    public LoginPresenter(RepositoryDataSourceInterface dataSource, Editor editor) {
+    public LoginPresenter(UserRepository dataSource, Editor editor) {
         this.dataSource = dataSource;
         this.disposable = PresenterHelper.getDisposable();
         this.editor = editor;

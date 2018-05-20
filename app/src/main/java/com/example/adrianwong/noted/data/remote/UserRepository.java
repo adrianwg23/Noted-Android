@@ -6,7 +6,7 @@ import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public interface RepositoryDataSourceInterface {
+public interface UserRepository {
 
     Observable<Response<UserDataModel>> loginUser (UserDataModel user);
     Observable<Response<UserDataModel>> registerUser (UserDataModel user);

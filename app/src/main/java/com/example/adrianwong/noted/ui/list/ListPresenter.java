@@ -1,6 +1,6 @@
 package com.example.adrianwong.noted.ui.list;
 
-import com.example.adrianwong.noted.data.remote.RepositoryDataSourceInterface;
+import com.example.adrianwong.noted.data.remote.UserRepository;
 import com.example.adrianwong.noted.ui.base.BasePresenter;
 import com.example.adrianwong.noted.util.PresenterHelper;
 
@@ -8,10 +8,10 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class ListPresenter extends BasePresenter<ListContract.ListView> implements ListContract.ViewActions {
 
-    private RepositoryDataSourceInterface dataSource;
+    private UserRepository dataSource;
     private CompositeDisposable disposable;
 
-    public ListPresenter(RepositoryDataSourceInterface dataSource) {
+    public ListPresenter(UserRepository dataSource) {
         this.dataSource = dataSource;
         this.disposable = PresenterHelper.getDisposable();
     }
