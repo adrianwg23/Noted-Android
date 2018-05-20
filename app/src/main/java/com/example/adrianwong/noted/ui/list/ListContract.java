@@ -4,6 +4,7 @@ public interface ListContract {
 
     interface ViewActions {
         void onAddFabClick();
+        void onStop();
     }
 
     interface ListView {

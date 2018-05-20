@@ -21,4 +21,9 @@ public class ListPresenter extends BasePresenter<ListContract.ListView> implemen
     public void onAddFabClick() {
         mView.startAddActivity();
     }
+
+    @Override
+    public void onStop() {
+        disposable.clear();
+    }
 }

@@ -19,10 +19,14 @@
     <string name="sign_up">Sign Up</string>
     <string name="username">Username</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="title">Title</string>
     <string name="note_title">Note Title</string>
     <string name="priority">Priority</string>
     <string name="note_body_hint">What is on your mind?</string>
+    <string name="save">Save</string>
+
+    <string name="priority_green">Green</string>
+    <string name="priority_yellow">Yellow</string>
+    <string name="priority_red">Red</string>
 </resources>
