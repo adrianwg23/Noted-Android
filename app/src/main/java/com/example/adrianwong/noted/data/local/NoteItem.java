@@ -53,4 +53,8 @@ public class NoteItem {
     public int getPriority() {
         return priority;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

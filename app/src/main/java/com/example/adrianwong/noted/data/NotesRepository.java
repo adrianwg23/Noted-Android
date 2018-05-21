@@ -45,7 +45,7 @@ public class NotesRepository {
         return mNoteDao.loadTaskById(noteId);
     }
 
-    public void saveNote(final NoteItem noteItem) {
+    public void insertNote(final NoteItem noteItem) {
         Observable.fromCallable(() -> {
             mNoteDao.insertNote(noteItem);
             return true;
@@ -56,11 +56,22 @@ public class NotesRepository {
     }
 
     public void updateNote(NoteItem noteItem) {
-        mNoteDao.updateNote(noteItem);
+        Observable.fromCallable(() -> {
+            mNoteDao.updateNote(noteItem);
+            return true;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 
     public void deleteNote(NoteItem noteItem) {
-        mNoteDao.deleteNote(noteItem);
+        Observable.fromCallable(() -> {
+            mNoteDao.deleteNote(noteItem);
+            return true;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
-
 }

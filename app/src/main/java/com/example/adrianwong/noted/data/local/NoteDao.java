@@ -16,7 +16,7 @@ public interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY updated_at")
     LiveData<List<NoteItem>> loadAllTasks();
 
-    @Insert
+    @Insert()
     void insertNote(NoteItem note);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)

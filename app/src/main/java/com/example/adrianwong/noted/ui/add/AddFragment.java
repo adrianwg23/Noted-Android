@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,13 +36,25 @@ import butterknife.ButterKnife;
  */
 public class AddFragment extends Fragment implements AddContract.AddView {
 
-    @BindView(R.id.et_note_title) EditText mNoteTitleEt;
-    @BindView(R.id.et_note_body) EditText mNoteBodyEt;
-    @BindView(R.id.spinner_priority) Spinner mPrioritySpinner;
+    @BindView(R.id.et_note_title)
+    EditText mNoteTitleEt;
+    @BindView(R.id.et_note_body)
+    EditText mNoteBodyEt;
+    @BindView(R.id.spinner_priority)
+    Spinner mPrioritySpinner;
 
     AddPresenter mAddPresenter;
     private int mPriority = Priority.GREEN; // Green
     private AddViewModel mViewModel;
+
+    // Extra for the task ID to be received in the intent
+    public static final String EXTRA_NOTE_ID = "extraTaskId";
+    // Extra for the task ID to be received after rotation
+    public static final String INSTANCE_NOTE_ID = "instanceTaskId";
+    // Constant for default task id to be used when not in update mode
+    public static final int DEFAULT_NOTE_ID = -1;
+
+    private int mNoteId = DEFAULT_NOTE_ID;
 
     public AddFragment() {
         // Required empty public constructor
@@ -57,18 +70,64 @@ public class AddFragment extends Fragment implements AddContract.AddView {
         setHasOptionsMenu(true);
 
         initViews();
-        setupViewModel();
 
         return rootView;
     }
 
-    public static AddFragment newInstance() { return new AddFragment(); }
+    public static AddFragment newInstance(int noteId) {
+        AddFragment fragment = new AddFragment();
+
+        Bundle args = new Bundle();
+        args.putInt(EXTRA_NOTE_ID, noteId);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         mAddPresenter = new AddPresenter(PresenterHelper.getDataSource());
         mAddPresenter.attachView(this);
+
+        Bundle args = getArguments();
+        mNoteId = args.getInt(EXTRA_NOTE_ID);
+
+        setupViewModel();
+
+        Log.d("AddFragment", "noteid: " + mNoteId);
+        if (mNoteId != DEFAULT_NOTE_ID) {
+            mViewModel.getNote().observe(this, noteItem -> {
+                populateUi(noteItem);
+            });
+        }
+    }
+
+    private void populateUi(NoteItem noteItem) {
+        String noteTitle = noteItem.getNoteTitle();
+        String noteBody = noteItem.getNoteBody();
+        int priority = noteItem.getPriority();
+
+        mNoteTitleEt.setText(noteTitle);
+        mNoteBodyEt.setText(noteBody);
+        setPrioritySpinner(priority);
+    }
+
+    private void setPrioritySpinner(int priority) {
+        switch (priority) {
+            case Priority.GREEN:
+                mPrioritySpinner.setSelection(Priority.GREEN);
+                break;
+            case Priority.YELLOW:
+                mPrioritySpinner.setSelection(Priority.YELLOW);
+                break;
+            case Priority.RED:
+                mPrioritySpinner.setSelection(Priority.RED);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -79,13 +138,19 @@ public class AddFragment extends Fragment implements AddContract.AddView {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        String noteTitle = mNoteTitleEt.getText().toString();
+        String noteBody = mNoteBodyEt.getText().toString();
+        Date date = new Date();
+        NoteItem note = new NoteItem(noteTitle, noteBody, date, mPriority);
+
         switch (item.getItemId()) {
             case R.id.action_save:
-                String noteTitle = mNoteTitleEt.getText().toString();
-                String noteBody = mNoteBodyEt.getText().toString();
-                Date date = new Date();
-                NoteItem note = new NoteItem(noteTitle, noteBody, date, mPriority);
-                mViewModel.saveNote(note);
+                if (mNoteId == DEFAULT_NOTE_ID) {
+                    mViewModel.insertNote(note);
+                } else {
+                    note.setId(mNoteId);
+                    mViewModel.updateNote(note);
+                }
                 getActivity().finish();
 
         }
@@ -135,7 +200,7 @@ public class AddFragment extends Fragment implements AddContract.AddView {
 
     @Override
     public void setupViewModel() {
-        AddViewModelFactory factory = InjectorUtil.provideAddViewModelFactory(getContext().getApplicationContext(), -1);
+        AddViewModelFactory factory = InjectorUtil.provideAddViewModelFactory(getContext().getApplicationContext(), mNoteId);
         mViewModel = ViewModelProviders.of(this, factory).get(AddViewModel.class);
     }
 }

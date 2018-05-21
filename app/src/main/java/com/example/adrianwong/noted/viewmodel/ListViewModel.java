@@ -14,6 +14,8 @@ public class ListViewModel extends ViewModel {
     private final NotesRepository mRepository;
     private final LiveData<List<NoteItem>> mNoteList;
 
+    private NoteItem tempNoteItem;
+
     public ListViewModel(NotesRepository repository) {
         this.mRepository = repository;
         this.mNoteList = repository.getNotes();
@@ -21,5 +23,19 @@ public class ListViewModel extends ViewModel {
 
     public LiveData<List<NoteItem>> getNoteList() {
         return mNoteList;
+    }
+
+    public void deleteNote(NoteItem note) {
+        mRepository.deleteNote(note);
+        tempNoteItem = note;
+    }
+
+    public void onUndoConfirmed() {
+        mRepository.insertNote(tempNoteItem);
+        tempNoteItem = null;
+    }
+
+    public void onSnackBarTimeout() {
+        tempNoteItem = null;
     }
 }

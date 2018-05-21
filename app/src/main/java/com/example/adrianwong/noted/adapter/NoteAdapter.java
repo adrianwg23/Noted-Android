@@ -64,14 +64,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         return mNoteList.size();
     }
 
-    public interface InteractionListener {
-        void onListClick(NoteItem note);
-    }
-
-    public void setListInteractionListener(InteractionListener interactionListener) {
-        mListInteractionListener = interactionListener;
-    }
-
     public void setNotes(List<NoteItem> noteList) {
         mNoteList = noteList;
         notifyDataSetChanged();
@@ -97,7 +89,24 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         return priorityColour;
     }
 
-    public class NoteItemViewHolder extends RecyclerView.ViewHolder {
+    public List<NoteItem> getNoteList() {
+        return mNoteList;
+    }
+
+    public void insertNoteAt(NoteItem note, int position) {
+        mNoteList.add(position, note);
+        notifyItemInserted(position);
+    }
+
+    public interface InteractionListener {
+        void onListClick(int noteId);
+    }
+
+    public void setListInteractionListener(InteractionListener interactionListener) {
+        mListInteractionListener = interactionListener;
+    }
+
+    public class NoteItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.tv_note_title)
         TextView mNoteTitleTv;
@@ -111,6 +120,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         public NoteItemViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mListInteractionListener != null) {
+                int elementId = mNoteList.get(getAdapterPosition()).getId();
+                Log.d("NoteAdapter", "elementid: " + elementId);
+                mListInteractionListener.onListClick(elementId);
+            }
         }
     }
 }

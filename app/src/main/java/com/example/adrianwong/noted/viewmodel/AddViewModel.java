@@ -18,5 +18,7 @@ public class AddViewModel extends ViewModel {
 
     public LiveData<NoteItem> getNote() { return mRepository.getNote(mNoteId); }
 
-    public void saveNote(NoteItem noteItem) { mRepository.saveNote(noteItem); }
+    public void insertNote(NoteItem noteItem) { mRepository.insertNote(noteItem); }
+
+    public void updateNote(NoteItem noteItem) { mRepository.updateNote(noteItem); }
 }

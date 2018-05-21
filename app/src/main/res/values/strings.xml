@@ -29,4 +29,6 @@
     <string name="priority_green">Green</string>
     <string name="priority_yellow">Yellow</string>
     <string name="priority_red">Red</string>
+    <string name="action_delete_item">Item Deleted</string>
+    <string name="action_undo">UNDO</string>
 </resources>
