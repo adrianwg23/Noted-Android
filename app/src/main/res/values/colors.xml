@@ -4,10 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="RED">#FF0000</color>
+    <color name="RED">#B00020</color>
     <color name="BLUE">#0000FF</color>
-    <color name="GREEN">#00FF00</color>
-    <color name="YELLOW">#FFEB3B</color>
+    <color name="GREEN">#09af00</color>
+    <color name="YELLOW">#FFED03</color>
 
     <color name="textColorLocation">#B4BAC0</color>
 </resources>
