@@ -13,6 +13,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public class NotedRestAdapter {
@@ -42,6 +43,12 @@ public class NotedRestAdapter {
 
         @POST(UrlManager.NEW_NOTE)
         Observable<ResponseDataModel> newNote(NoteItem note);
+
+        @POST(UrlManager.DELETE_NOTE)
+        Observable<ResponseDataModel> deleteNote(@Path("id") int noteId);
+
+        @PUT(UrlManager.UPDATE_NOTE)
+        Observable<ResponseDataModel> updateNote(@Path("id") int noteId);
 
         @GET(UrlManager.GET_NOTES)
         Observable<Response<List<NoteItem>>> getNotes(
