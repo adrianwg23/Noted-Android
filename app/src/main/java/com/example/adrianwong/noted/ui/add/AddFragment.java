@@ -1,16 +1,20 @@
 package com.example.adrianwong.noted.ui.add;
 
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -55,6 +59,16 @@ public class AddFragment extends Fragment implements AddContract.AddView {
     public static final int DEFAULT_NOTE_ID = -1;
 
     private int mNoteId = DEFAULT_NOTE_ID;
+
+    private boolean mNoteHasChanged = false;
+
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+             mNoteHasChanged = true;
+            return false;
+        }
+    };
 
     public AddFragment() {
         // Required empty public constructor
@@ -152,8 +166,17 @@ public class AddFragment extends Fragment implements AddContract.AddView {
                     mViewModel.updateNote(note);
                 }
                 getActivity().finish();
+                return true;
+            case android.R.id.home:
+                if (!mNoteHasChanged) {
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                    return true;
+                }
 
+                onBackPressed();
+                return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -171,6 +194,10 @@ public class AddFragment extends Fragment implements AddContract.AddView {
 
     @Override
     public void initViews() {
+        mNoteTitleEt.setOnTouchListener(mTouchListener);
+        mNoteBodyEt.setOnTouchListener(mTouchListener);
+        mPrioritySpinner.setOnTouchListener(mTouchListener);
+
         ArrayAdapter prioritySpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.priority_array_options, android.R.layout.simple_dropdown_item_1line);
         prioritySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
@@ -203,4 +230,43 @@ public class AddFragment extends Fragment implements AddContract.AddView {
         AddViewModelFactory factory = InjectorUtil.provideAddViewModelFactory(getContext().getApplicationContext(), mNoteId);
         mViewModel = ViewModelProviders.of(this, factory).get(AddViewModel.class);
     }
+
+    @Override
+    public void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener) {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.unsaved_changes_dialog_msg);
+        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
+        builder.setNegativeButton(R.string.keep_editing, (dialog, which) -> {
+            // User clicked the "Keep editing" button, so dismiss the dialog
+            // and continue editing the pet.
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Otherwise if there are unsaved changes, setup a dialog to warn the user.
+        // Create a click listener to handle the user confirming that changes should be discarded.
+        DialogInterface.OnClickListener discardButtonClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                getActivity().finish();
+            }
+        };
+
+        showUnsavedChangesDialog(discardButtonClickListener);
+    }
+
+    @Override
+    public boolean hasNoteChanged() {
+        return mNoteHasChanged;
+    }
+
 }

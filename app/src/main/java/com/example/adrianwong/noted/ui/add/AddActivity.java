@@ -2,9 +2,11 @@ package com.example.adrianwong.noted.ui.add;
 
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.ui.base.BaseActivity;
@@ -12,6 +14,7 @@ import com.example.adrianwong.noted.ui.base.BaseActivity;
 public class AddActivity extends BaseActivity {
 
     private static final String ADD_ACTIVITY = "ACTIVITY_ADD";
+    private AddFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +22,7 @@ public class AddActivity extends BaseActivity {
         setContentView(R.layout.activity_add);
 
         FragmentManager manager = getSupportFragmentManager();
-        AddFragment fragment = (AddFragment) manager.findFragmentByTag(ADD_ACTIVITY);
+        fragment = (AddFragment) manager.findFragmentByTag(ADD_ACTIVITY);
 
         Intent intent = getIntent();
 
@@ -33,5 +36,14 @@ public class AddActivity extends BaseActivity {
         }
 
         addFragmentToActivity(manager, fragment, R.id.root_activity_add, ADD_ACTIVITY);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!fragment.hasNoteChanged()) {
+            super.onBackPressed();
+        } else {
+            fragment.onBackPressed();
+        }
     }
 }
