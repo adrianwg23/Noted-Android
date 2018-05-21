@@ -19,6 +19,9 @@ public class ResponseDataModel {
     @Json(name = "refresh_token")
     private String refreshToken;
 
+    @Json(name = "user_id")
+    private int userId;
+
     public ResponseDataModel(String username, String password) {
         this.username = username;
         this.password = password;
@@ -33,4 +36,6 @@ public class ResponseDataModel {
     }
 
     public String getMessage() { return message; }
+
+    public int getUserId() { return userId; }
 }

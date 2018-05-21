@@ -56,9 +56,11 @@ public class LoginPresenter extends BasePresenter<LoginContract.LoginView> imple
                         if (response.isSuccessful()) {
                             String accessToken = response.body().getAccessToken();
                             String refreshToken = response.body().getRefreshToken();
+                            int userId = response.body().getUserId();
 
                             editor.putString("access_token", accessToken);
                             editor.putString("refresh_token", refreshToken);
+                            editor.putInt("user_id", userId);
                             editor.putBoolean("is_logged_in", true);
                             editor.commit();
 
