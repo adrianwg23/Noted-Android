@@ -1,6 +1,6 @@
 package com.example.adrianwong.noted.data.remote;
 
-import com.example.adrianwong.noted.datamodel.UserDataModel;
+import com.example.adrianwong.noted.datamodel.ResponseDataModel;
 
 import io.reactivex.Observable;
 import retrofit2.Response;
@@ -14,12 +14,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Observable<Response<UserDataModel>> loginUser(UserDataModel user) {
+    public Observable<Response<ResponseDataModel>> loginUser(ResponseDataModel user) {
         return restAdapter.loginUser(user);
     }
 
     @Override
-    public Observable<Response<UserDataModel>> registerUser(UserDataModel user) {
+    public Observable<Response<ResponseDataModel>> registerUser(ResponseDataModel user) {
         return restAdapter.registerUser(user);
     }
 

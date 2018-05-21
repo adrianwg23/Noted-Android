@@ -2,7 +2,7 @@ package com.example.adrianwong.noted.datamodel;
 
 import com.squareup.moshi.Json;
 
-public class UserDataModel {
+public class ResponseDataModel {
 
     @Json(name = "username")
     private String username;
@@ -19,7 +19,7 @@ public class UserDataModel {
     @Json(name = "refresh_token")
     private String refreshToken;
 
-    public UserDataModel(String username, String password) {
+    public ResponseDataModel(String username, String password) {
         this.username = username;
         this.password = password;
     }

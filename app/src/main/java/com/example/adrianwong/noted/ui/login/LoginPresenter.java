@@ -3,7 +3,7 @@ package com.example.adrianwong.noted.ui.login;
 import android.content.SharedPreferences.Editor;
 
 import com.example.adrianwong.noted.data.remote.UserRepository;
-import com.example.adrianwong.noted.datamodel.UserDataModel;
+import com.example.adrianwong.noted.datamodel.ResponseDataModel;
 import com.example.adrianwong.noted.ui.base.BasePresenter;
 import com.example.adrianwong.noted.util.PresenterHelper;
 import com.squareup.moshi.JsonAdapter;
@@ -32,12 +32,12 @@ public class LoginPresenter extends BasePresenter<LoginContract.LoginView> imple
 
     @Override
     public void onLoginClicked(String username, String password) {
-        loginOrRegister(dataSource.loginUser(new UserDataModel(username, password)));
+        loginOrRegister(dataSource.loginUser(new ResponseDataModel(username, password)));
     }
 
     @Override
     public void onRegisterClicked(String username, String password) {
-        loginOrRegister(dataSource.registerUser(new UserDataModel(username, password)));
+        loginOrRegister(dataSource.registerUser(new ResponseDataModel(username, password)));
     }
 
     @Override
@@ -45,14 +45,14 @@ public class LoginPresenter extends BasePresenter<LoginContract.LoginView> imple
         disposable.clear();
     }
 
-    private void loginOrRegister(Observable<Response<UserDataModel>> observable) {
+    private void loginOrRegister(Observable<Response<ResponseDataModel>> observable) {
         mView.showLoading();
         disposable.add(observable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribeWith(new DisposableObserver<Response<UserDataModel>>() {
+                .subscribeWith(new DisposableObserver<Response<ResponseDataModel>>() {
                     @Override
-                    public void onNext(Response<UserDataModel> response) {
+                    public void onNext(Response<ResponseDataModel> response) {
                         if (response.isSuccessful()) {
                             String accessToken = response.body().getAccessToken();
                             String refreshToken = response.body().getRefreshToken();
@@ -66,7 +66,7 @@ public class LoginPresenter extends BasePresenter<LoginContract.LoginView> imple
                         }
                         if (response.errorBody() != null) {
                             Moshi moshi = new Moshi.Builder().build();
-                            JsonAdapter<UserDataModel> jsonAdapter = moshi.adapter(UserDataModel.class);
+                            JsonAdapter<ResponseDataModel> jsonAdapter = moshi.adapter(ResponseDataModel.class);
 
                             try {
                                 String message = jsonAdapter.fromJson(response.errorBody().string()).getMessage();
