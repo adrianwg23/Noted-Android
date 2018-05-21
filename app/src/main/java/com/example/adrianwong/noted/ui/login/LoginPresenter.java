@@ -3,7 +3,7 @@ package com.example.adrianwong.noted.ui.login;
 import android.content.SharedPreferences.Editor;
 
 import com.example.adrianwong.noted.data.remote.UserRepository;
-import com.example.adrianwong.noted.datamodel.remote.UserDataModel;
+import com.example.adrianwong.noted.datamodel.UserDataModel;
 import com.example.adrianwong.noted.ui.base.BasePresenter;
 import com.example.adrianwong.noted.util.PresenterHelper;
 import com.squareup.moshi.JsonAdapter;

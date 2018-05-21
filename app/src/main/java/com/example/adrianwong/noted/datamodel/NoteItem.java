@@ -1,4 +1,4 @@
-package com.example.adrianwong.noted.data.local;
+package com.example.adrianwong.noted.datamodel;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;

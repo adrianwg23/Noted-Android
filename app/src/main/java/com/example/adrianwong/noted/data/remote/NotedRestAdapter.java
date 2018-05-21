@@ -1,7 +1,7 @@
 package com.example.adrianwong.noted.data.remote;
 
 
-import com.example.adrianwong.noted.datamodel.remote.UserDataModel;
+import com.example.adrianwong.noted.datamodel.UserDataModel;
 
 import io.reactivex.Observable;
 import retrofit2.Response;

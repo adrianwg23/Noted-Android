@@ -4,7 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.util.Log;
 
 import com.example.adrianwong.noted.data.local.NoteDao;
-import com.example.adrianwong.noted.data.local.NoteItem;
+import com.example.adrianwong.noted.datamodel.NoteItem;
 import com.example.adrianwong.noted.data.remote.NotedRestAdapter;
 
 import java.util.List;

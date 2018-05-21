@@ -4,7 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.example.adrianwong.noted.data.NotesRepository;
-import com.example.adrianwong.noted.data.local.NoteItem;
+import com.example.adrianwong.noted.datamodel.NoteItem;
 
 public class AddViewModel extends ViewModel {
 

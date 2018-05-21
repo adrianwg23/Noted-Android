@@ -22,7 +22,7 @@ import android.widget.ProgressBar;
 
 import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.adapter.NoteAdapter;
-import com.example.adrianwong.noted.data.local.NoteItem;
+import com.example.adrianwong.noted.datamodel.NoteItem;
 import com.example.adrianwong.noted.ui.add.AddActivity;
 import com.example.adrianwong.noted.ui.add.AddFragment;
 import com.example.adrianwong.noted.util.InjectorUtil;

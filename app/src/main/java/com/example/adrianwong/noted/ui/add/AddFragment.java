@@ -23,7 +23,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.example.adrianwong.noted.R;
-import com.example.adrianwong.noted.data.local.NoteItem;
+import com.example.adrianwong.noted.datamodel.NoteItem;
 import com.example.adrianwong.noted.util.InjectorUtil;
 import com.example.adrianwong.noted.util.PresenterHelper;
 import com.example.adrianwong.noted.util.Priority;

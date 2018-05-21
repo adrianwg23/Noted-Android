@@ -1,4 +1,4 @@
-package com.example.adrianwong.noted.datamodel.remote;
+package com.example.adrianwong.noted.datamodel;
 
 import com.squareup.moshi.Json;
 

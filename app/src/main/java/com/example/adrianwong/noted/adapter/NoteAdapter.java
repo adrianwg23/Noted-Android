@@ -11,12 +11,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.adrianwong.noted.R;
-import com.example.adrianwong.noted.data.local.NoteItem;
+import com.example.adrianwong.noted.datamodel.NoteItem;
 import com.example.adrianwong.noted.util.Priority;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
