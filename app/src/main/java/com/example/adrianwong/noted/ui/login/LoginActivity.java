@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.example.adrianwong.noted.R;
+import com.example.adrianwong.noted.ui.add.AddActivity;
 import com.example.adrianwong.noted.ui.base.BaseActivity;
 import com.example.adrianwong.noted.ui.list.ListActivity;
 

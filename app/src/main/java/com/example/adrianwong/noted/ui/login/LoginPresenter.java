@@ -32,12 +32,12 @@ public class LoginPresenter extends BasePresenter<LoginContract.LoginView> imple
 
     @Override
     public void onLoginClicked(String username, String password) {
-        loginOrRegister(dataSource.loginUser(new ResponseDataModel(username, password)));
+        loginOrRegister(dataSource.loginUser(new ResponseDataModel(username, password)), username);
     }
 
     @Override
     public void onRegisterClicked(String username, String password) {
-        loginOrRegister(dataSource.registerUser(new ResponseDataModel(username, password)));
+        loginOrRegister(dataSource.registerUser(new ResponseDataModel(username, password)), username);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class LoginPresenter extends BasePresenter<LoginContract.LoginView> imple
         disposable.clear();
     }
 
-    private void loginOrRegister(Observable<Response<ResponseDataModel>> observable) {
+    private void loginOrRegister(Observable<Response<ResponseDataModel>> observable, final String username) {
         mView.showLoading();
         disposable.add(observable
                 .observeOn(AndroidSchedulers.mainThread())
@@ -58,8 +58,9 @@ public class LoginPresenter extends BasePresenter<LoginContract.LoginView> imple
                             String refreshToken = response.body().getRefreshToken();
                             int userId = response.body().getUserId();
 
-                            editor.putString("access_token", accessToken);
-                            editor.putString("refresh_token", refreshToken);
+                            editor.putString("access_token", "Bearer " + accessToken);
+                            editor.putString("refresh_token", "Bearer " + refreshToken);
+                            editor.putString("username", username);
                             editor.putInt("user_id", userId);
                             editor.putBoolean("is_logged_in", true);
                             editor.commit();

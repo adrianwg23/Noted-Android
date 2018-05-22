@@ -4,7 +4,9 @@ package com.example.adrianwong.noted.ui.add;
 import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
@@ -51,10 +53,11 @@ public class AddFragment extends Fragment implements AddContract.AddView {
     private int mPriority = Priority.GREEN; // Green
     private AddViewModel mViewModel;
 
+    private SharedPreferences pref;
+
     // Extra for the task ID to be received in the intent
     public static final String EXTRA_NOTE_ID = "extraTaskId";
-    // Extra for the task ID to be received after rotation
-    public static final String INSTANCE_NOTE_ID = "instanceTaskId";
+
     // Constant for default task id to be used when not in update mode
     public static final int DEFAULT_NOTE_ID = -1;
 
@@ -82,6 +85,7 @@ public class AddFragment extends Fragment implements AddContract.AddView {
         View rootView = inflater.inflate(R.layout.fragment_add, container, false);
         ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
+        pref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
 
         initViews();
 
@@ -155,14 +159,20 @@ public class AddFragment extends Fragment implements AddContract.AddView {
         String noteTitle = mNoteTitleEt.getText().toString();
         String noteBody = mNoteBodyEt.getText().toString();
         Date date = new Date();
-        NoteItem note = new NoteItem(noteTitle, noteBody, date, mPriority);
+        Long time = date.getTime();
+        int userId = pref.getInt("user_id", 0);
+        NoteItem note = new NoteItem(noteTitle, noteBody, time, mPriority, userId);
+
+        String accessToken = pref.getString("access_token", "failed");
 
         switch (item.getItemId()) {
             case R.id.action_save:
                 if (mNoteId == DEFAULT_NOTE_ID) {
+                    mViewModel.insertRemoteNote(accessToken, note);
                     mViewModel.insertNote(note);
                 } else {
                     note.setId(mNoteId);
+                    mViewModel.updateRemoteNote(accessToken, note);
                     mViewModel.updateNote(note);
                 }
                 getActivity().finish();
@@ -190,6 +200,7 @@ public class AddFragment extends Fragment implements AddContract.AddView {
     public void onStop() {
         super.onStop();
         mAddPresenter.onStop();
+        mViewModel.onStop();
     }
 
     @Override

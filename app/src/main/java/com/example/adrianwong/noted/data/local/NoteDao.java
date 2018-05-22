@@ -15,11 +15,14 @@ import java.util.List;
 @Dao
 public interface NoteDao {
 
-    @Query("SELECT * FROM notes ORDER BY updated_at")
-    LiveData<List<NoteItem>> loadAllTasks();
+    @Query("SELECT * FROM notes WHERE user_id = :id ORDER BY updated_at")
+    LiveData<List<NoteItem>> loadAllTasks(int id);
 
     @Insert()
     void insertNote(NoteItem note);
+
+    @Insert()
+    void insertMultipleNotes(List<NoteItem> notes);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void updateNote(NoteItem note);
@@ -27,7 +30,10 @@ public interface NoteDao {
     @Delete
     void deleteNote(NoteItem note);
 
-    @Query("SELECT * FROM notes WHERE id = :id")
+    @Delete
+    void deleteAll(List<NoteItem> notes);
+
+    @Query("SELECT * FROM notes WHERE note_id = :id")
     LiveData<NoteItem> loadTaskById(int id);
 
 }

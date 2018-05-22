@@ -16,8 +16,10 @@ import com.example.adrianwong.noted.util.Priority;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,10 +49,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
     @Override
     public void onBindViewHolder(@NonNull NoteItemViewHolder holder, int position) {
         NoteItem note = mNoteList.get(position);
+        Date date = new Date(note.getUpdatedAt());
+
         String noteTitle = note.getNoteTitle();
         String noteBody = note.getNoteBody();
         int priority = note.getPriority();
-        String updatedAt = dateFormat.format(note.getUpdatedAt());
+        String updatedAt = dateFormat.format(date);
 
         holder.mNoteTitleTv.setText(noteTitle);
         holder.mNoteBodyTv.setText(noteBody);
@@ -66,6 +70,10 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
     public void setNotes(List<NoteItem> noteList) {
         mNoteList = noteList;
         notifyDataSetChanged();
+    }
+
+    public List<NoteItem> getNotes() {
+        return mNoteList;
     }
 
     private int getPriorityColour(int priority) {
@@ -92,9 +100,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         return mNoteList;
     }
 
-    public void insertNoteAt(NoteItem note, int position) {
-        mNoteList.add(position, note);
-        notifyItemInserted(position);
+    public boolean isEmpty() {
+        return mNoteList.isEmpty();
     }
 
     public interface InteractionListener {

@@ -12,5 +12,6 @@ public class UrlManager {
     public static final String GET_NOTES = "/notes/{username}";
     public static final String UPDATE_NOTE = "/note/{id}";
     public static final String DELETE_NOTE = "/note/{id}";
+    public static final String SYNC = "/note/{username}";
 
 }
