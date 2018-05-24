@@ -4,14 +4,11 @@ package com.example.adrianwong.noted.ui.add;
 import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,15 +21,16 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.adrianwong.noted.MyApplication;
 import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.datamodel.NoteItem;
-import com.example.adrianwong.noted.util.InjectorUtil;
-import com.example.adrianwong.noted.util.PresenterHelper;
 import com.example.adrianwong.noted.util.Constants;
 import com.example.adrianwong.noted.viewmodel.AddViewModel;
 import com.example.adrianwong.noted.viewmodel.AddViewModelFactory;
 
 import java.util.Date;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,29 +40,22 @@ import butterknife.ButterKnife;
  */
 public class AddFragment extends Fragment implements AddContract.AddView {
 
-    @BindView(R.id.et_note_title)
-    EditText mNoteTitleEt;
-    @BindView(R.id.et_note_body)
-    EditText mNoteBodyEt;
-    @BindView(R.id.spinner_priority)
-    Spinner mPrioritySpinner;
+    @BindView(R.id.et_note_title) EditText mNoteTitleEt;
+    @BindView(R.id.et_note_body) EditText mNoteBodyEt;
+    @BindView(R.id.spinner_priority) Spinner mPrioritySpinner;
 
-    AddPresenter mAddPresenter;
-    private int mPriority = Constants.GREEN; // Green
-    private AddViewModel mViewModel;
+    @Inject
+    AddViewModelFactory factory;
 
-    private SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
-    private final String ACCESS_TOKEN = pref.getString("access_token", "failed");
-    private final int USER_ID = pref.getInt("user_id", 0);
-
-
-    // Extra for the task ID to be received in the intent
-    public static final String EXTRA_NOTE_ID = "extraTaskId";
-
-    // Constant for default task id to be used when not in update mode
-    public static final int DEFAULT_NOTE_ID = -1;
+    @Inject
+    Constants constants;
 
     private int mNoteId = DEFAULT_NOTE_ID;
+    private int mPriority = Constants.GREEN;
+    private AddViewModel mViewModel;
+
+    public static final String EXTRA_NOTE_ID = "extraTaskId";
+    public static final int DEFAULT_NOTE_ID = -1;
 
     private boolean mNoteHasChanged = false;
 
@@ -87,6 +78,8 @@ public class AddFragment extends Fragment implements AddContract.AddView {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_add, container, false);
         ButterKnife.bind(this, rootView);
+        MyApplication.getApp().getAppComponent().inject(this);
+
         setHasOptionsMenu(true);
 
         initViews();
@@ -108,17 +101,13 @@ public class AddFragment extends Fragment implements AddContract.AddView {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAddPresenter = new AddPresenter(PresenterHelper.getDataSource());
-        mAddPresenter.attachView(this);
-
         Bundle args = getArguments();
         mNoteId = args.getInt(EXTRA_NOTE_ID);
 
-        setupViewModel();
+        mViewModel = ViewModelProviders.of(this, factory).get(AddViewModel.class);
 
-        Log.d("AddFragment", "noteid: " + mNoteId);
         if (mNoteId != DEFAULT_NOTE_ID) {
-            mViewModel.getNote().observe(this, noteItem -> {
+            mViewModel.getNote(mNoteId).observe(this, noteItem -> {
                 populateUi(noteItem);
             });
         }
@@ -162,16 +151,16 @@ public class AddFragment extends Fragment implements AddContract.AddView {
         String noteBody = mNoteBodyEt.getText().toString();
         Date date = new Date();
         Long time = date.getTime();
-        NoteItem note = new NoteItem(noteTitle, noteBody, time, mPriority, USER_ID);
+        NoteItem note = new NoteItem(noteTitle, noteBody, time, mPriority, constants.getUserId());
 
         switch (item.getItemId()) {
             case R.id.action_save:
                 if (mNoteId == DEFAULT_NOTE_ID) {
-                    mViewModel.insertRemoteNote(ACCESS_TOKEN, note);
+                    mViewModel.insertRemoteNote(constants.getAccessToken(), note);
                     mViewModel.insertNote(note);
                 } else {
                     note.setId(mNoteId);
-                    mViewModel.updateRemoteNote(ACCESS_TOKEN, note);
+                    mViewModel.updateRemoteNote(constants.getAccessToken(), note);
                     mViewModel.updateNote(note);
                 }
                 getActivity().finish();
@@ -192,13 +181,11 @@ public class AddFragment extends Fragment implements AddContract.AddView {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mAddPresenter.detachView();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mAddPresenter.onStop();
         mViewModel.onStop();
     }
 
@@ -233,12 +220,6 @@ public class AddFragment extends Fragment implements AddContract.AddView {
                 mPriority = Constants.GREEN;
             }
         });
-    }
-
-    @Override
-    public void setupViewModel() {
-        AddViewModelFactory factory = InjectorUtil.provideAddViewModelFactory(getContext().getApplicationContext(), mNoteId);
-        mViewModel = ViewModelProviders.of(this, factory).get(AddViewModel.class);
     }
 
     @Override

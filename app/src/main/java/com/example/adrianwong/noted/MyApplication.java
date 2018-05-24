@@ -2,24 +2,35 @@ package com.example.adrianwong.noted;
 
 import android.app.Application;
 
-import com.example.adrianwong.noted.di.DaggerDataComponent;
-import com.example.adrianwong.noted.di.DataComponent;
+import com.example.adrianwong.noted.di.AppModule;
+import com.example.adrianwong.noted.di.DaggerAppComponent;
+import com.example.adrianwong.noted.di.AppComponent;
 import com.example.adrianwong.noted.di.DataModule;
 
 public class MyApplication extends Application {
 
-    private DataComponent dataComponent;
+    private static MyApplication app;
+
+    private AppComponent appComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        dataComponent = DaggerDataComponent
+
+        app = this;
+
+        appComponent = DaggerAppComponent
                 .builder()
                 .dataModule(new DataModule(this))
+                .appModule(new AppModule())
                 .build();
     }
 
-    public DataComponent getDataComponent() {
-        return dataComponent;
+    public AppComponent getAppComponent() {
+        return appComponent;
+    }
+
+    public static MyApplication getApp() {
+        return app;
     }
 }

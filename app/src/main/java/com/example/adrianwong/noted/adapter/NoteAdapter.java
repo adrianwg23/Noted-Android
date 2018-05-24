@@ -41,7 +41,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
     @Override
     public NoteItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item, parent, false);
-        Log.d("NoteAdapter", "parent: " + parent);
         return new NoteItemViewHolder(view);
     }
 
@@ -75,6 +74,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         return mNoteList;
     }
 
+    /**
+     * Decide which colour to load
+     * @param priority
+     * @return
+     */
     private int getPriorityColour(int priority) {
         int priorityColour = 0;
 
@@ -99,10 +103,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         return mNoteList;
     }
 
-    public boolean isEmpty() {
-        return mNoteList.isEmpty();
-    }
-
     public interface InteractionListener {
         void onListClick(int noteId);
     }
@@ -113,14 +113,10 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
 
     public class NoteItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.tv_note_title)
-        TextView mNoteTitleTv;
-        @BindView(R.id.tv_note_body)
-        TextView mNoteBodyTv;
-        @BindView(R.id.priority_view)
-        View mPriorityView;
-        @BindView(R.id.tv_date)
-        TextView mDateTv;
+        @BindView(R.id.tv_note_title) TextView mNoteTitleTv;
+        @BindView(R.id.tv_note_body) TextView mNoteBodyTv;
+        @BindView(R.id.priority_view) View mPriorityView;
+        @BindView(R.id.tv_date) TextView mDateTv;
 
         public NoteItemViewHolder(View itemView) {
             super(itemView);
@@ -133,7 +129,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         public void onClick(View v) {
             if (mListInteractionListener != null) {
                 int elementId = mNoteList.get(getAdapterPosition()).getId();
-                Log.d("NoteAdapter", "elementid: " + elementId);
                 mListInteractionListener.onListClick(elementId);
             }
         }

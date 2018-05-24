@@ -1,11 +1,21 @@
 package com.example.adrianwong.noted.di;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.example.adrianwong.noted.data.NotesRepository;
 import com.example.adrianwong.noted.data.local.AppDatabase;
 import com.example.adrianwong.noted.data.remote.NotedRestAdapter;
 import com.example.adrianwong.noted.data.remote.UrlManager;
+import com.example.adrianwong.noted.data.remote.UserRepository;
+import com.example.adrianwong.noted.data.remote.UserRepositoryImpl;
+import com.example.adrianwong.noted.ui.list.ListPresenter;
+import com.example.adrianwong.noted.ui.login.LoginPresenter;
+import com.example.adrianwong.noted.util.Constants;
+import com.example.adrianwong.noted.viewmodel.AddViewModelFactory;
+import com.example.adrianwong.noted.viewmodel.ListViewModelFactory;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,6 +23,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.disposables.CompositeDisposable;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -26,6 +37,12 @@ public class DataModule {
 
     public DataModule(Application application) {
         this.application = application;
+    }
+
+    @Provides
+    @Singleton
+    Context provideContext() {
+        return application;
     }
 
     @Provides
@@ -69,8 +86,26 @@ public class DataModule {
 
     @Provides
     @Singleton
-    NotesRepository provideRepository(NotedRestAdapter restAdapter) {
-        AppDatabase database = AppDatabase.getInstance(application.getApplicationContext());
+    NotesRepository provideNotesRepository(NotedRestAdapter restAdapter, Context context) {
+        AppDatabase database = AppDatabase.getInstance(context.getApplicationContext());
         return NotesRepository.getInstance(database.noteDao(), restAdapter);
+    }
+
+    @Provides
+    @Singleton
+    UserRepository provideUserRepository(NotedRestAdapter adapter) {
+        return new UserRepositoryImpl(adapter);
+    }
+
+    @Provides
+    @Singleton
+    CompositeDisposable provideCompositeDisposable() {
+        return new CompositeDisposable();
+    }
+
+    @Provides
+    @Singleton
+    Constants provideConstants(SharedPreferences preferences) {
+        return new Constants(preferences);
     }
 }

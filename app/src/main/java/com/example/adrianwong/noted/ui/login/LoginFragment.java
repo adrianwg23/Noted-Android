@@ -2,10 +2,7 @@ package com.example.adrianwong.noted.ui.login;
 
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -18,9 +15,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.adrianwong.noted.MyApplication;
 import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.ui.list.ListActivity;
-import com.example.adrianwong.noted.util.PresenterHelper;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,8 +35,8 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView, 
     @BindView(R.id.tv_sign_up) TextView mSignUpTextView;
     @BindView(R.id.progress_bar_login) ProgressBar mLoginProgressBar;
 
-    private LoginPresenter mLoginPresenter;
-
+    @Inject
+    LoginPresenter mLoginPresenter;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -54,6 +53,8 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView, 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
         ButterKnife.bind(this, rootView);
+        MyApplication.getApp().getAppComponent().inject(this);
+
 
         mLoginButton.setOnClickListener(this);
         mSignUpTextView.setOnClickListener(this);
@@ -66,10 +67,6 @@ public class LoginFragment extends Fragment implements LoginContract.LoginView, 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        Editor editor = pref.edit();
-
-        mLoginPresenter = new LoginPresenter(PresenterHelper.getDataSource(), editor);
         mLoginPresenter.attachView(this);
     }
 

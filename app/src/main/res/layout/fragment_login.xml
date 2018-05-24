@@ -22,6 +22,7 @@
             android:hint="@string/username" />
 
         <EditText
+            android:inputType="textPassword"
             android:id="@+id/et_password"
             style="@style/Login"
             android:layout_width="match_parent"

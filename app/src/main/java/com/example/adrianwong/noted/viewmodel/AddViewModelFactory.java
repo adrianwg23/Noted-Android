@@ -6,19 +6,24 @@ import android.support.annotation.NonNull;
 
 import com.example.adrianwong.noted.data.NotesRepository;
 
+import javax.inject.Inject;
+
+import io.reactivex.disposables.CompositeDisposable;
+
 public class AddViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
+    private final CompositeDisposable mDisposable;
     private final NotesRepository mRepository;
-    private final int mNoteId;
 
-    public AddViewModelFactory(NotesRepository repository, int noteId) {
+    @Inject
+    public AddViewModelFactory(NotesRepository repository, CompositeDisposable disposable) {
         this.mRepository = repository;
-        this.mNoteId = noteId;
+        this.mDisposable = disposable;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new AddViewModel(mRepository, mNoteId);
+        return (T) new AddViewModel(mRepository, mDisposable);
     }
 }

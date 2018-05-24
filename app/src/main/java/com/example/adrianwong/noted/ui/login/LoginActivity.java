@@ -3,26 +3,30 @@ package com.example.adrianwong.noted.ui.login;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
+import com.example.adrianwong.noted.MyApplication;
 import com.example.adrianwong.noted.R;
-import com.example.adrianwong.noted.ui.add.AddActivity;
 import com.example.adrianwong.noted.ui.base.BaseActivity;
 import com.example.adrianwong.noted.ui.list.ListActivity;
+
+import javax.inject.Inject;
 
 public class LoginActivity extends BaseActivity {
 
     private static final String LOGIN_FRAG = "LOGIN_FRAG";
 
+    @Inject
+    SharedPreferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MyApplication.getApp().getAppComponent().inject(this);
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        if (pref.getBoolean("is_logged_in", false)) {
+        // Check if user is already logged in
+        if (preferences.getBoolean("is_logged_in", false)) {
             Intent intent = new Intent(this, ListActivity.class);
             startActivity(intent);
             finish();

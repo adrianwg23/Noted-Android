@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.CoordinatorLayout;
@@ -25,17 +24,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.example.adrianwong.noted.MyApplication;
 import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.adapter.NoteAdapter;
 import com.example.adrianwong.noted.datamodel.NoteItem;
 import com.example.adrianwong.noted.ui.add.AddActivity;
 import com.example.adrianwong.noted.ui.add.AddFragment;
 import com.example.adrianwong.noted.ui.login.LoginActivity;
-import com.example.adrianwong.noted.util.InjectorUtil;
+import com.example.adrianwong.noted.util.Constants;
 import com.example.adrianwong.noted.viewmodel.ListViewModel;
 import com.example.adrianwong.noted.viewmodel.ListViewModelFactory;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,15 +53,20 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
     @BindView(R.id.list_progress_bar) ProgressBar mProgressBar;
     @BindView(R.id.coordinator_layout) CoordinatorLayout mCoordinatorLayout;
 
-    private ListPresenter mListPresenter;
+    @Inject
+    ListPresenter mListPresenter;
+
+    @Inject
+    ListViewModelFactory factory;
+
+    @Inject
+    SharedPreferences preferences;
+
+    @Inject
+    Constants constants;
+
     private NoteAdapter mNoteAdapter;
     private ListViewModel mViewModel;
-    private SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
-
-    private final String ACCESS_TOKEN = pref.getString("access_token", "failed");
-    private final String REFRESH_TOKEN = pref.getString("refresh_token", "failed");
-    private final String USERNAME = pref.getString("username", "failed");
-    private final int USER_ID = pref.getInt("user_id", 0);
 
 
     public ListFragment() {
@@ -77,7 +85,8 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_logout:
-                mListPresenter.logout(ACCESS_TOKEN, REFRESH_TOKEN, mNoteAdapter.getNoteList());
+                // Revoke tokens
+                mListPresenter.logout(constants.getAccessToken(), constants.getRefreshToken(), mNoteAdapter.getNoteList());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -89,6 +98,8 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, rootView);
+        MyApplication.getApp().getAppComponent().inject(this);
+
         setHasOptionsMenu(true);
 
         mNoteAdapter = new NoteAdapter(getContext());
@@ -105,18 +116,18 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mListPresenter = new ListPresenter(InjectorUtil.provideRepository(getContext().getApplicationContext()), pref.edit());
         mListPresenter.attachView(this);
         setupViewModel();
 
-        if (!pref.getBoolean("list_fetched", false)) { makeRequest(); }
+        // Ensure list is only fetched on login
+        if (!preferences.getBoolean("list_fetched", false)) { makeRequest(); }
     }
 
     @Override
     public void onStop() {
-        super.onStop();
-        mListPresenter.onStop();
         mViewModel.onStop();
+        mListPresenter.onStop();
+        super.onStop();
     }
 
 
@@ -146,10 +157,10 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
 
     @Override
     public void makeRequest() {
-        SharedPreferences.Editor editor = pref.edit();
+        SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("list_fetched", true).apply();
 
-        mListPresenter.fetchNotes(ACCESS_TOKEN, USERNAME);
+        mListPresenter.fetchNotes(constants.getAccessToken(), constants.getUsername());
     }
 
     @Override
@@ -175,9 +186,8 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
 
     @Override
     public void setupViewModel() {
-        ListViewModelFactory factory = InjectorUtil.provideListViewModelFactory(getContext().getApplicationContext());
         mViewModel = ViewModelProviders.of(this, factory).get(ListViewModel.class);
-        mViewModel.getNoteList(USER_ID).observe(this, noteList -> {
+        mViewModel.getNoteList(constants.getUserId()).observe(this, noteList -> {
             showLoading();
             mNoteAdapter.setNotes(noteList);
             hideLoading();
@@ -186,6 +196,7 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
 
     @Override
     public void showUndoSnackBar(NoteItem note) {
+        AtomicBoolean noteAddedBack = new AtomicBoolean(false);
         Snackbar.make(
                 mCoordinatorLayout,
                 getString(R.string.action_delete_item),
@@ -193,12 +204,13 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
         )
                 .setAction(R.string.action_undo, v -> {
                     mViewModel.onUndoConfirmed();
+                    noteAddedBack.set(true);
                 })
                 .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
                     @Override
                     public void onDismissed(Snackbar transientBottomBar, int event) {
                         super.onDismissed(transientBottomBar, event);
-                        mViewModel.deleteRemoteNote(ACCESS_TOKEN, note.getId());
+                        if (!noteAddedBack.get()) mViewModel.deleteRemoteNote(constants.getAccessToken(), note.getId());
                         mViewModel.onSnackBarTimeout();
                     }
                 })
@@ -228,6 +240,7 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                // Delete note locally
                 int position = viewHolder.getAdapterPosition();
                 List<NoteItem> notes = mNoteAdapter.getNoteList();
                 NoteItem note = notes.get(position);

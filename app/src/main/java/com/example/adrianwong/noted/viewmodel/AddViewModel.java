@@ -5,7 +5,8 @@ import android.arch.lifecycle.ViewModel;
 
 import com.example.adrianwong.noted.data.NotesRepository;
 import com.example.adrianwong.noted.datamodel.NoteItem;
-import com.example.adrianwong.noted.util.PresenterHelper;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -13,20 +14,32 @@ import io.reactivex.schedulers.Schedulers;
 
 public class AddViewModel extends ViewModel {
 
-    CompositeDisposable mDisposable;
+    private final CompositeDisposable mDisposable;
     private final NotesRepository mRepository;
-    private int mNoteId;
 
-    public AddViewModel(NotesRepository repository, int noteId) {
+    public AddViewModel(NotesRepository repository, CompositeDisposable disposable) {
         mRepository = repository;
-        mNoteId = noteId;
-        mDisposable = PresenterHelper.getDisposable();
+        mDisposable = disposable;
     }
 
-    public LiveData<NoteItem> getNote() { return mRepository.getNote(mNoteId); }
+    /**
+     * Called when loading a note that already exists in the db
+     * @param noteId
+     * @return
+     */
+    public LiveData<NoteItem> getNote(int noteId) { return mRepository.getNote(noteId); }
 
+    /**
+     * Insertion of note to local db
+     * @param noteItem
+     */
     public void insertNote(NoteItem noteItem) { mRepository.insertNote(noteItem); }
 
+    /**
+     * insertion of note to remote db
+     * @param accessToken
+     * @param noteItem
+     */
     public void insertRemoteNote(String accessToken, NoteItem noteItem) {
         mDisposable.add(mRepository.newRemoteNote(accessToken, noteItem)
                 .subscribeOn(Schedulers.io())
@@ -35,6 +48,11 @@ public class AddViewModel extends ViewModel {
         );
     }
 
+    /**
+     * updating of note in remote db
+     * @param accessToken
+     * @param noteItem
+     */
     public void updateRemoteNote(String accessToken, NoteItem noteItem) {
         mDisposable.add(mRepository.updateRemoteNote(accessToken, noteItem, noteItem.getId())
                 .subscribeOn(Schedulers.io())
@@ -43,6 +61,10 @@ public class AddViewModel extends ViewModel {
         );
     }
 
+    /**
+     * updating of note in local db
+     * @param noteItem
+     */
     public void updateNote(NoteItem noteItem) { mRepository.updateNote(noteItem); }
 
     public void onStop() {

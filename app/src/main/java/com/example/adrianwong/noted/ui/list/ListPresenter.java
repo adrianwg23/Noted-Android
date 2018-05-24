@@ -6,9 +6,10 @@ import com.example.adrianwong.noted.data.NotesRepository;
 import com.example.adrianwong.noted.datamodel.NoteItem;
 import com.example.adrianwong.noted.datamodel.ResponseDataModel;
 import com.example.adrianwong.noted.ui.base.BasePresenter;
-import com.example.adrianwong.noted.util.PresenterHelper;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -21,11 +22,12 @@ public class ListPresenter extends BasePresenter<ListContract.ListView> implemen
 
     private NotesRepository mRepository;
     private CompositeDisposable disposable;
-    SharedPreferences.Editor editor;
+    private SharedPreferences.Editor editor;
 
-    public ListPresenter(NotesRepository repository, SharedPreferences.Editor editor) {
+    @Inject
+    public ListPresenter(NotesRepository repository, SharedPreferences.Editor editor, CompositeDisposable disposable) {
         this.mRepository = repository;
-        this.disposable = PresenterHelper.getDisposable();
+        this.disposable = disposable;
         this.editor = editor;
     }
 

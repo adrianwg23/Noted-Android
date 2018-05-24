@@ -5,11 +5,12 @@ import android.content.SharedPreferences.Editor;
 import com.example.adrianwong.noted.data.remote.UserRepository;
 import com.example.adrianwong.noted.datamodel.ResponseDataModel;
 import com.example.adrianwong.noted.ui.base.BasePresenter;
-import com.example.adrianwong.noted.util.PresenterHelper;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -24,9 +25,10 @@ public class LoginPresenter extends BasePresenter<LoginContract.LoginView> imple
     private CompositeDisposable disposable;
     private Editor editor;
 
-    public LoginPresenter(UserRepository dataSource, Editor editor) {
+    @Inject
+    public LoginPresenter(UserRepository dataSource, Editor editor, CompositeDisposable disposable) {
         this.dataSource = dataSource;
-        this.disposable = PresenterHelper.getDisposable();
+        this.disposable = disposable;
         this.editor = editor;
     }
 
