@@ -11,6 +11,8 @@ import com.example.adrianwong.noted.datamodel.ResponseDataModel;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.internal.operators.observable.ObservableError;
@@ -24,12 +26,13 @@ public class NotesRepository {
     private final NotedRestAdapter mRestAdapter;
     private static final String LOG_TAG = NotesRepository.class.getSimpleName();
 
+    @Inject
     public NotesRepository(NoteDao noteDao, NotedRestAdapter restAdapter) {
         this.mNoteDao = noteDao;
         this.mRestAdapter = restAdapter;
     }
 
-    public static synchronized NotesRepository getIntance(NoteDao noteDao, NotedRestAdapter restAdapter) {
+    public static synchronized NotesRepository getInstance(NoteDao noteDao, NotedRestAdapter restAdapter) {
         Log.d(LOG_TAG, "Getting the repository");
         if (sInstance == null) {
             synchronized (LOCK) {
