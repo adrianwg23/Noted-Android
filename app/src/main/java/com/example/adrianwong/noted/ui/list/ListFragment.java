@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.CoordinatorLayout;
@@ -33,7 +32,6 @@ import com.example.adrianwong.noted.ui.add.AddActivity;
 import com.example.adrianwong.noted.ui.add.AddFragment;
 import com.example.adrianwong.noted.ui.login.LoginActivity;
 import com.example.adrianwong.noted.util.InjectorUtil;
-import com.example.adrianwong.noted.util.PresenterHelper;
 import com.example.adrianwong.noted.viewmodel.ListViewModel;
 import com.example.adrianwong.noted.viewmodel.ListViewModelFactory;
 
@@ -55,7 +53,13 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
     private ListPresenter mListPresenter;
     private NoteAdapter mNoteAdapter;
     private ListViewModel mViewModel;
-    private SharedPreferences pref;
+    private SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+
+    private final String ACCESS_TOKEN = pref.getString("access_token", "failed");
+    private final String REFRESH_TOKEN = pref.getString("refresh_token", "failed");
+    private final String USERNAME = pref.getString("username", "failed");
+    private final int USER_ID = pref.getInt("user_id", 0);
+
 
     public ListFragment() {
         // Required empty public constructor
@@ -73,9 +77,7 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_logout:
-                String accessToken = pref.getString("access_token", "failed");
-                String refreshToken = pref.getString("refresh_token", "failed");
-                mListPresenter.logout(accessToken, refreshToken, mNoteAdapter.getNoteList());
+                mListPresenter.logout(ACCESS_TOKEN, REFRESH_TOKEN, mNoteAdapter.getNoteList());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -88,7 +90,6 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
-        pref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
 
         mNoteAdapter = new NoteAdapter(getContext());
         mNoteAdapter.setListInteractionListener(this);
@@ -147,10 +148,8 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
     public void makeRequest() {
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean("list_fetched", true).apply();
-        String accessToken = pref.getString("access_token", "failed");
-        String username = pref.getString("username", "failed");
 
-        mListPresenter.fetchNotes(accessToken, username);
+        mListPresenter.fetchNotes(ACCESS_TOKEN, USERNAME);
     }
 
     @Override
@@ -176,10 +175,9 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
 
     @Override
     public void setupViewModel() {
-        int user_id = pref.getInt("user_id", 0);
         ListViewModelFactory factory = InjectorUtil.provideListViewModelFactory(getContext().getApplicationContext());
         mViewModel = ViewModelProviders.of(this, factory).get(ListViewModel.class);
-        mViewModel.getNoteList(user_id).observe(this, noteList -> {
+        mViewModel.getNoteList(USER_ID).observe(this, noteList -> {
             showLoading();
             mNoteAdapter.setNotes(noteList);
             hideLoading();
@@ -187,22 +185,21 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
     }
 
     @Override
-    public void showUndoSnackBar() {
+    public void showUndoSnackBar(NoteItem note) {
         Snackbar.make(
                 mCoordinatorLayout,
                 getString(R.string.action_delete_item),
                 Snackbar.LENGTH_LONG
         )
                 .setAction(R.string.action_undo, v -> {
-                    String accessToken = pref.getString("access_token", "failed");
                     mViewModel.onUndoConfirmed();
-                    mViewModel.onUndoConfirmedRemote(accessToken);
                 })
                 .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
                     @Override
                     public void onDismissed(Snackbar transientBottomBar, int event) {
                         super.onDismissed(transientBottomBar, event);
-                            mViewModel.onSnackBarTimeout();
+                        mViewModel.deleteRemoteNote(ACCESS_TOKEN, note.getId());
+                        mViewModel.onSnackBarTimeout();
                     }
                 })
                 .show();
@@ -234,11 +231,9 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
                 int position = viewHolder.getAdapterPosition();
                 List<NoteItem> notes = mNoteAdapter.getNoteList();
                 NoteItem note = notes.get(position);
-                String accessToken = pref.getString("access_token", "failed");
 
-                mViewModel.deleteRemoteNote(accessToken, note.getId());
                 mViewModel.deleteNote(note);
-                showUndoSnackBar();
+                showUndoSnackBar(note);
             }
         };
         return simpleCallback;

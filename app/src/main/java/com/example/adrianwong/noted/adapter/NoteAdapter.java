@@ -12,14 +12,13 @@ import android.widget.TextView;
 
 import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.datamodel.NoteItem;
-import com.example.adrianwong.noted.util.Priority;
+import com.example.adrianwong.noted.util.Constants;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -80,13 +79,13 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteItemViewHo
         int priorityColour = 0;
 
         switch (priority) {
-            case Priority.GREEN:
+            case Constants.GREEN:
                 priorityColour = ContextCompat.getColor(mContext, R.color.GREEN);
                 break;
-            case Priority.YELLOW:
+            case Constants.YELLOW:
                 priorityColour = ContextCompat.getColor(mContext, R.color.YELLOW);
                 break;
-            case Priority.RED:
+            case Constants.RED:
                 priorityColour = ContextCompat.getColor(mContext, R.color.RED);
                 break;
             default:

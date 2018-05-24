@@ -15,7 +15,7 @@ public interface ListContract {
     interface ListView {
         void initViews();
         void setupViewModel();
-        void showUndoSnackBar();
+        void showUndoSnackBar(NoteItem note);
         void startAddActivity();
         void startLoginActivity();
         void insertToDb(List<NoteItem> notes);

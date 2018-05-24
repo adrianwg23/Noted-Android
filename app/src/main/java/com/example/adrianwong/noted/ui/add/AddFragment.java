@@ -28,7 +28,7 @@ import com.example.adrianwong.noted.R;
 import com.example.adrianwong.noted.datamodel.NoteItem;
 import com.example.adrianwong.noted.util.InjectorUtil;
 import com.example.adrianwong.noted.util.PresenterHelper;
-import com.example.adrianwong.noted.util.Priority;
+import com.example.adrianwong.noted.util.Constants;
 import com.example.adrianwong.noted.viewmodel.AddViewModel;
 import com.example.adrianwong.noted.viewmodel.AddViewModelFactory;
 
@@ -50,10 +50,13 @@ public class AddFragment extends Fragment implements AddContract.AddView {
     Spinner mPrioritySpinner;
 
     AddPresenter mAddPresenter;
-    private int mPriority = Priority.GREEN; // Green
+    private int mPriority = Constants.GREEN; // Green
     private AddViewModel mViewModel;
 
-    private SharedPreferences pref;
+    private SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+    private final String ACCESS_TOKEN = pref.getString("access_token", "failed");
+    private final int USER_ID = pref.getInt("user_id", 0);
+
 
     // Extra for the task ID to be received in the intent
     public static final String EXTRA_NOTE_ID = "extraTaskId";
@@ -85,7 +88,6 @@ public class AddFragment extends Fragment implements AddContract.AddView {
         View rootView = inflater.inflate(R.layout.fragment_add, container, false);
         ButterKnife.bind(this, rootView);
         setHasOptionsMenu(true);
-        pref = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
 
         initViews();
 
@@ -134,14 +136,14 @@ public class AddFragment extends Fragment implements AddContract.AddView {
 
     private void setPrioritySpinner(int priority) {
         switch (priority) {
-            case Priority.GREEN:
-                mPrioritySpinner.setSelection(Priority.GREEN);
+            case Constants.GREEN:
+                mPrioritySpinner.setSelection(Constants.GREEN);
                 break;
-            case Priority.YELLOW:
-                mPrioritySpinner.setSelection(Priority.YELLOW);
+            case Constants.YELLOW:
+                mPrioritySpinner.setSelection(Constants.YELLOW);
                 break;
-            case Priority.RED:
-                mPrioritySpinner.setSelection(Priority.RED);
+            case Constants.RED:
+                mPrioritySpinner.setSelection(Constants.RED);
                 break;
             default:
                 break;
@@ -160,19 +162,16 @@ public class AddFragment extends Fragment implements AddContract.AddView {
         String noteBody = mNoteBodyEt.getText().toString();
         Date date = new Date();
         Long time = date.getTime();
-        int userId = pref.getInt("user_id", 0);
-        NoteItem note = new NoteItem(noteTitle, noteBody, time, mPriority, userId);
-
-        String accessToken = pref.getString("access_token", "failed");
+        NoteItem note = new NoteItem(noteTitle, noteBody, time, mPriority, USER_ID);
 
         switch (item.getItemId()) {
             case R.id.action_save:
                 if (mNoteId == DEFAULT_NOTE_ID) {
-                    mViewModel.insertRemoteNote(accessToken, note);
+                    mViewModel.insertRemoteNote(ACCESS_TOKEN, note);
                     mViewModel.insertNote(note);
                 } else {
                     note.setId(mNoteId);
-                    mViewModel.updateRemoteNote(accessToken, note);
+                    mViewModel.updateRemoteNote(ACCESS_TOKEN, note);
                     mViewModel.updateNote(note);
                 }
                 getActivity().finish();
@@ -220,18 +219,18 @@ public class AddFragment extends Fragment implements AddContract.AddView {
                 String selection = (String) parent.getItemAtPosition(position);
                 if (!TextUtils.isEmpty(selection)) {
                     if (selection.equals(getString(R.string.priority_green))) {
-                        mPriority = Priority.GREEN;
+                        mPriority = Constants.GREEN;
                     } else if (selection.equals(getString(R.string.priority_yellow))) {
-                        mPriority = Priority.YELLOW;
+                        mPriority = Constants.YELLOW;
                     } else {
-                        mPriority = Priority.RED;
+                        mPriority = Constants.RED;
                     }
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mPriority = Priority.GREEN;
+                mPriority = Constants.GREEN;
             }
         });
     }
