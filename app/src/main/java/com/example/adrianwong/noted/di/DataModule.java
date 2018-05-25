@@ -3,7 +3,6 @@ package com.example.adrianwong.noted.di;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.example.adrianwong.noted.data.NotesRepository;
 import com.example.adrianwong.noted.data.local.AppDatabase;
@@ -11,11 +10,7 @@ import com.example.adrianwong.noted.data.remote.NotedRestAdapter;
 import com.example.adrianwong.noted.data.remote.UrlManager;
 import com.example.adrianwong.noted.data.remote.UserRepository;
 import com.example.adrianwong.noted.data.remote.UserRepositoryImpl;
-import com.example.adrianwong.noted.ui.list.ListPresenter;
-import com.example.adrianwong.noted.ui.login.LoginPresenter;
 import com.example.adrianwong.noted.util.Constants;
-import com.example.adrianwong.noted.viewmodel.AddViewModelFactory;
-import com.example.adrianwong.noted.viewmodel.ListViewModelFactory;
 
 import java.util.concurrent.TimeUnit;
 

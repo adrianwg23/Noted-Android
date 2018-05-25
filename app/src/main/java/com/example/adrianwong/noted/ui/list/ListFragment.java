@@ -224,7 +224,6 @@ public class ListFragment extends Fragment implements ListContract.ListView, Vie
 
     @Override
     public void onListClick(int itemId) {
-        Log.d("ListFragment", "itemid: " + itemId);
         Intent intent = new Intent(getActivity(), AddActivity.class);
         intent.putExtra(AddFragment.EXTRA_NOTE_ID, itemId);
         startActivity(intent);
